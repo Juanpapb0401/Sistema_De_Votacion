@@ -1,0 +1,12 @@
+<state>
+  <timestamp value='1748623665409' />
+  <sourceSet name='default'>
+    <source name='/home/swarch/reliable-message-example/Service.ice'>
+      <file name='/home/swarch/reliable-message-example/server/build/generated-src/app/Service.java' />
+      <file name='/home/swarch/reliable-message-example/server/build/generated-src/app/ServicePrx.java' />
+      <file name='/home/swarch/reliable-message-example/server/build/generated-src/app/_ServicePrxI.java' />
+    </source>
+    <arg value='/opt/Ice-3.7.9/bin/slice2java' />
+    <arg value='-I/opt/Ice-3.7.9/slice' />
+  </sourceSet>
+</state>

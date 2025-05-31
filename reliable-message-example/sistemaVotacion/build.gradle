@@ -1,0 +1,29 @@
+slice {
+    java {
+        files = [file("../Service.ice")]
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies{
+    implementation 'com.zeroc:ice:3.7.2'
+    implementation project(':reliableServer')
+}
+
+application {
+    mainClass = 'sistemaVotacion.SistemaVotacion'
+}
+
+jar {
+    manifest {
+        attributes(
+            "Main-Class": "sistemaVotacion.SistemaVotacion",
+            "Class-Path": configurations.runtimeClasspath.resolve().collect { it.toURI() }.join(' ')
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
