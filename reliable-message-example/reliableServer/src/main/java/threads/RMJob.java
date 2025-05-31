@@ -51,14 +51,17 @@ public class RMJob extends Thread{
                     notification.sendMessage(rm.getValue());
                     messagesPendig.remove(rm.getKey());
                     forConfirm.put(rm.getKey(), rm.getValue());
+                } catch (com.zeroc.Ice.ConnectionRefusedException e) {
+                    System.out.println("Esperando conexion con el servidor, los mensajes quedaran guardados hasta establecer conexion");
                 } catch (Exception e) {
+                    System.out.println("Error inesperado al enviar mensaje: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
             try {
                 Thread.sleep(10000);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
             }
         }
     }

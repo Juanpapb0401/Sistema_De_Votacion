@@ -1,4 +1,5 @@
 package sistemaVotacion;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class Controller {
     private RMSourcePrx rm;
     private Communicator com;
     private RMDestinationPrx dest;
+    private int userId;
+    private boolean isTxtLoaded = false;
 
     public Controller() {
         this.candidates = new ArrayList<>();
@@ -38,10 +41,15 @@ public class Controller {
         }
         com.shutdown();
         */
-        
+    }
+
+    public void login() {
+        System.out.println("Ingrese su cedula: ");
+        userId = Integer.parseInt(System.console().readLine());
     }
 
     public void startUI() throws FileNotFoundException{
+        login();
         System.out.println("Bienvenido al sistema de votacion");
         System.out.println("1. Iniciar votacion");
         System.out.println("2. Salir");
@@ -59,25 +67,28 @@ public class Controller {
     public void startVotation() throws FileNotFoundException {
         rm.setServerProxy(dest);
         System.out.println("Estos son los candidatos disponibles: ");
-        readCandidates();
+        if (!isTxtLoaded) {
+            readCandidates();
+            isTxtLoaded = true;
+        }
         for (int i = 0; i < candidates.size(); i++) {
             System.out.println(i + ". " + candidates.get(i));
         }
         System.out.println("Ingrese el numero del candidato que desea votar: ");
         int candidateNumber = Integer.parseInt(System.console().readLine());
-        Vote vote = new Vote(candidateNumber, 1);
+        Vote vote = new Vote(candidateNumber, userId);
         addVote(vote);
+        startUI();
     }
 
     public void readCandidates() throws FileNotFoundException {
         try {
             // Cargar como recurso desde el classpath
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Candidatos.txt");
-    
             if (inputStream == null) {
                 throw new FileNotFoundException("No se pudo encontrar Candidatos.txt");
             }
-    
+            
             Scanner scanner = new Scanner(inputStream);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -90,7 +101,7 @@ public class Controller {
         }
     }
 
-    public void addVote(Vote vote) {
+    public void addVote(Vote vote) throws FileNotFoundException {
         rm.sendMessage(vote);
         System.out.println("Voto agregado correctamente");
     }
