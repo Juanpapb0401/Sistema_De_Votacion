@@ -47,7 +47,7 @@ public class RMJob extends Thread{
             System.out.println("cicle");
             for(Map.Entry<String,ReliableMessage> rm: messagesPendig.entrySet()){
                 try {
-                    System.out.println("Sendig messge");
+                    System.out.println("Guardando mensaje");
                     notification.sendMessage(rm.getValue());
                     messagesPendig.remove(rm.getKey());
                     forConfirm.put(rm.getKey(), rm.getValue());

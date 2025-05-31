@@ -1,10 +1,14 @@
 package sistemaVotacion;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.zeroc.Ice.Communicator;
 import com.zeroc.Ice.Util;
@@ -22,9 +26,12 @@ public class Controller {
     private RMDestinationPrx dest;
     private int userId;
     private boolean isTxtLoaded = false;
+    private Set<String> validCitizens;
+    private boolean isValidCitizensLoaded = false;
 
     public Controller() {
         this.candidates = new ArrayList<>();
+        this.validCitizens = new HashSet<>();
         this.com = Util.initialize();
         this.rm = RMSourcePrx.checkedCast(com.stringToProxy("Sender:tcp -h localhost -p 10010"));
         this.dest = RMDestinationPrx.uncheckedCast(com.stringToProxy("Service:tcp -h localhost -p 10012"));
@@ -44,8 +51,52 @@ public class Controller {
     }
 
     public void login() {
-        System.out.println("Ingrese su cedula: ");
-        userId = Integer.parseInt(System.console().readLine());
+        if (!isValidCitizensLoaded) {
+            loadValidCitizens();
+            isValidCitizensLoaded = true;
+        }
+        
+        boolean isValidCitizen = false;
+        String citizenId = "";
+        
+        while (!isValidCitizen) {
+            System.out.println("Ingrese su cedula: ");
+            citizenId = System.console().readLine();
+            
+            if (validCitizens.contains(citizenId)) {
+                isValidCitizen = true;
+                userId = Integer.parseInt(citizenId);
+            } else {
+                System.out.println("Lo sentimos, usted no esta habilitado para votar en esta mesa de votacion.");
+                System.out.println("Desea intentar con otra cedula? S/N: ");
+                String option = System.console().readLine();
+                if (!option.equalsIgnoreCase("S")) {
+                    System.exit(0);
+                }
+            }
+        }
+    }
+
+    private void loadValidCitizens() {
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Ciudadanos.csv");
+            if (inputStream == null) {
+                throw new FileNotFoundException("No se pudo encontrar Ciudadanos.csv");
+            }
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    validCitizens.add(line);
+                }
+            }
+            reader.close();
+        } catch (Exception e) {
+            System.out.println("Error al cargar los ciudadanos habilitados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void startUI() throws FileNotFoundException{
