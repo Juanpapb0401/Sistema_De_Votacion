@@ -19,3 +19,11 @@ Diagrama de deployment con los módulos solicitados que cumplan con los requerim
 Diseño del experimento: Documento (o presentación) que describa cómo se validará que el sistema cumple con los requisitos de confiabilidad y unicidad del conteo de votos. (Ubicado en la carpeta Docs del repositorio) 
 
 Video explicativo: Grabación en la que se exponga el funcionamiento del sistema, la estrategia utilizada y los patrones de diseño aplicados en la solución. (Link del Video en este Readme)
+
+https://icesiedu-my.sharepoint.com/:v:/g/personal/1110362743_u_icesi_edu_co/EZsHwESx-f9AkY0Din3qo6oBsD3NKJhM9hCKoTacf709UQ?e=2wcO8v&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D
+
+https://youtu.be/WIZA1ZHEiWQ
+
+
+
+
