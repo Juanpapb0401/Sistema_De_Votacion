@@ -6,7 +6,9 @@ import model.ReliableMessage;
 import reliableMessage.ACKServicePrx;
 import reliableMessage.RMDestinationPrx;
 
+
 public class Notification {
+
 
     private RMDestinationPrx service;
     private ACKServicePrx ackService;
