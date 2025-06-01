@@ -12,10 +12,10 @@ En el marco del sistema de votaciones desarrollado para la Registraduría, la em
 
 Entregables
 
-    Código fuente: Implementación completa de los módulos solicitados. (El mismo código que esta en el repositorio)
+Código fuente: Implementación completa de los módulos solicitados. (El mismo código que esta en el repositorio)
 
-    Diagrama de deployment con los módulos solicitados que cumplan con los requerimientos funcionales y no funcionales. (Ubicado en la carpeta Docs del repositorio) 
+Diagrama de deployment con los módulos solicitados que cumplan con los requerimientos funcionales y no funcionales. (Ubicado en la carpeta Docs del repositorio) 
 
-    Diseño del experimento: Documento (o presentación) que describa cómo se validará que el sistema cumple con los requisitos de confiabilidad y unicidad del conteo de votos. (Ubicado en la carpeta Docs del repositorio) 
+Diseño del experimento: Documento (o presentación) que describa cómo se validará que el sistema cumple con los requisitos de confiabilidad y unicidad del conteo de votos. (Ubicado en la carpeta Docs del repositorio) 
 
-    Video explicativo: Grabación en la que se exponga el funcionamiento del sistema, la estrategia utilizada y los patrones de diseño aplicados en la solución. (Link del Video en este Readme)
+Video explicativo: Grabación en la que se exponga el funcionamiento del sistema, la estrategia utilizada y los patrones de diseño aplicados en la solución. (Link del Video en este Readme)
