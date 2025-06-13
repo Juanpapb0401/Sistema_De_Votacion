@@ -20,7 +20,7 @@ import reliableMessage.RMSourcePrx;
 
 public class VoteLoadTest {
     
-    private static final int TOTAL_VOTES = 100000;
+    private static final int TOTAL_VOTES = 25000;
     private static final int NUM_CANDIDATES = 4;
     private static final boolean USE_REAL_CITIZENS = false;
     
@@ -77,8 +77,8 @@ public class VoteLoadTest {
     }
     
     public void startTest() {
-        System.out.println("===== PRUEBA CON 100,000 VOTOS =====");
-        System.out.println("Iniciando prueba de carga con " + TOTAL_VOTES);
+        System.out.println("25000 votos x maquina");
+        System.out.println("Iniciando prueba de carga " + TOTAL_VOTES);
         rm.setServerProxy(dest);
         
         long startTime = System.currentTimeMillis();

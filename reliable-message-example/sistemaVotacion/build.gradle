@@ -1,22 +1,45 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+shadowJar {
+    archiveBaseName.set('consulta-puesto')
+    archiveClassifier.set('all')
+    archiveVersion.set('')
+    mergeServiceFiles()
+
+    manifest {
+        attributes 'Main-Class': (project.hasProperty('mainClass') ? project.property('mainClass') : 'sistemaVotacion.SistemaVotacion')
+    }
+}
+
 slice {
     java {
         files = [file("../Service.ice")]
     }
 }
+
 repositories {
     mavenCentral()
 }
 
+application {
+    mainClass = project.hasProperty('mainClass')
+            ? project.property('mainClass')
+            : 'sistemaVotacion.SistemaVotacion'
+}
+
 dependencies{
     implementation 'com.zeroc:ice:3.7.2'
+    implementation 'org.postgresql:postgresql:42.7.1'
     implementation project(':reliableServer')
+    implementation project(':server')
 }
 
-application {
-    mainClass = 'sistemaVotacion.SistemaVotacion'
-}
+
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
             "Main-Class": "sistemaVotacion.SistemaVotacion",

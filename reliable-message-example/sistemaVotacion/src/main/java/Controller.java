@@ -51,26 +51,39 @@ public class Controller {
     }
 
     public void login() {
-        if (!isValidCitizensLoaded) {
-            loadValidCitizens();
-            isValidCitizensLoaded = true;
-        }
-        
-        boolean isValidCitizen = false;
+        ConexionBD conexion = new ConexionBD();
+        int mesaActual = MesaConfig.getMesaId();
+
+        boolean valid = false;
         String citizenId = "";
-        
-        while (!isValidCitizen) {
-            System.out.println("Ingrese su cedula: ");
-            citizenId = System.console().readLine();
-            
-            if (validCitizens.contains(citizenId)) {
-                isValidCitizen = true;
-                userId = Integer.parseInt(citizenId);
-            } else {
-                System.out.println("Lo sentimos, usted no esta habilitado para votar en esta mesa de votacion.");
-                System.out.println("Desea intentar con otra cedula? S/N: ");
-                String option = System.console().readLine();
-                if (!option.equalsIgnoreCase("S")) {
+
+        while (!valid) {
+            System.out.print("Ingrese su cédula: ");
+            citizenId = leerLinea();
+
+            try {
+                java.util.List<java.util.Map<String, Object>> res =
+                        conexion.getInfoBDWithParams("SELECT mesa_id FROM ciudadano WHERE documento = ?", citizenId);
+
+                if (res.isEmpty()) {
+                    System.out.println("La cédula no se encuentra registrada.");
+                } else {
+                    int mesaAsignada = ((Number) res.get(0).get("mesa_id")).intValue();
+                    if (mesaAsignada == mesaActual) {
+                        valid = true;
+                        userId = Integer.parseInt(citizenId);
+                    } else {
+                        System.out.println("Esta cédula no está asignada a la mesa actual.");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error consultando la base de datos: " + e.getMessage());
+            }
+
+            if (!valid) {
+                System.out.print("¿Desea intentar con otra cédula? (S/N): ");
+                String opt = leerLinea();
+                if (!opt.equalsIgnoreCase("S")) {
                     System.exit(0);
                 }
             }
@@ -134,7 +147,6 @@ public class Controller {
 
     public void readCandidates() throws FileNotFoundException {
         try {
-            // Cargar como recurso desde el classpath
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Candidatos.txt");
             if (inputStream == null) {
                 throw new FileNotFoundException("No se pudo encontrar Candidatos.txt");
@@ -155,5 +167,27 @@ public class Controller {
     public void addVote(Vote vote) throws FileNotFoundException {
         rm.sendMessage(vote);
         System.out.println("Voto agregado correctamente");
+    }
+
+    public void getInfoFromBD() {
+        ConexionBD conexion = new ConexionBD();
+        String sql = "SELECT * FROM votos";
+        try {
+            java.util.List<java.util.Map<String, Object>> rows = conexion.getInfoBD(sql);
+            System.out.println("Información obtenida de la BD:");
+            for (java.util.Map<String, Object> row : rows) {
+                System.out.println(row);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al obtener información de la BD: " + e.getMessage());
+        }
+    }
+
+    private String leerLinea() {
+        if (System.console() != null) {
+            return System.console().readLine();
+        }
+        java.util.Scanner sc = new java.util.Scanner(System.in);
+        return sc.nextLine();
     }
 }
