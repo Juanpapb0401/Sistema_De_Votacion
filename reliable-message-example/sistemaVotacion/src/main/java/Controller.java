@@ -70,8 +70,13 @@ public class Controller {
                 } else {
                     int mesaAsignada = ((Number) res.get(0).get("mesa_id")).intValue();
                     if (mesaAsignada == mesaActual) {
-                        valid = true;
-                        userId = Integer.parseInt(citizenId);
+                        // Verificar si ya votó
+                        if (VoteRegistry.hasVoted(citizenId)) {
+                            System.out.println("Esta cédula ya registró su voto en esta mesa.");
+                        } else {
+                            valid = true;
+                            userId = Integer.parseInt(citizenId);
+                        }
                     } else {
                         System.out.println("Esta cédula no está asignada a la mesa actual.");
                     }
@@ -142,6 +147,8 @@ public class Controller {
         int candidateNumber = Integer.parseInt(System.console().readLine());
         Vote vote = new Vote(candidateNumber, userId);
         addVote(vote);
+        // Registrar que el ciudadano ya votó
+        VoteRegistry.register(String.valueOf(userId));
         startUI();
     }
 

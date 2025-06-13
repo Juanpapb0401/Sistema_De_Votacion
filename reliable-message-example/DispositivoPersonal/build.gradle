@@ -1,0 +1,35 @@
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.zeroc:ice:3.7.2'
+    implementation project(':server')
+    implementation 'org.postgresql:postgresql:42.7.1'
+}
+
+application {
+    mainClass = 'dispositivoPersonal.ConsultarPuesto'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass.get(),
+                'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('DispositivoPersonal')
+    archiveClassifier.set('all')
+    archiveVersion.set('')
+    mergeServiceFiles()
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+}
