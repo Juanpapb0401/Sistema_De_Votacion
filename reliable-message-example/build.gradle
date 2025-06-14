@@ -12,4 +12,9 @@ subprojects{
         sourceCompatibility = JavaVersion.VERSION_20
         targetCompatibility = JavaVersion.VERSION_20
     }
+
+    // Configuración específica para macOS
+    slice {
+        iceHome = '/opt/homebrew/opt/ice'
+    }
 }

@@ -1,0 +1,15 @@
+#
+# The IceGrid instance name para Sistema de Votación
+#
+IceGrid.InstanceName=SistemaVotacion
+
+#
+IceGrid.Registry.Client.Endpoints=default -h localhost -p 4061
+
+IceGrid.Registry.Server.Endpoints=default -h localhost
+IceGrid.Registry.Internal.Endpoints=default -h localhost
+IceGrid.Registry.AdminPermissionsVerifier=SistemaVotacion/NullPermissionsVerifier
+
+IceGrid.Registry.LMDB.Path=db/registry
+IceGrid.Registry.Discovery.Interface=127.0.0.1
+

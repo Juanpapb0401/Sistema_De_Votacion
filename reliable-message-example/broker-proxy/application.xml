@@ -1,0 +1,31 @@
+<icegrid>
+
+  <application name="SistemaVotacionApp">
+
+    <!-- Template para múltiples instancias del servidor -->
+    <server-template id="VotingServerTemplate">
+      <parameter name="index"/>
+      <server id="VotingServer-${index}" exe="java" activation="on-demand">
+        <option>-jar</option>
+        <option>../server/build/libs/server.jar</option>
+        <adapter name="Server-${index}" endpoints="tcp -h localhost -p 1001${index}">
+          <object identity="Service-${index}" type="::app::Service" property="Identity"/>
+        </adapter>
+        <properties>
+          <property name="ServerIndex" value="${index}"/>
+        </properties>
+      </server>
+    </server-template>
+
+    <node name="node1">
+      <!-- Múltiples instancias del servidor para alto throughput -->
+      <server-instance template="VotingServerTemplate" index="1"/>
+      <server-instance template="VotingServerTemplate" index="2"/>
+      <server-instance template="VotingServerTemplate" index="3"/>
+      <server-instance template="VotingServerTemplate" index="4"/>
+      <server-instance template="VotingServerTemplate" index="5"/>
+    </node>
+
+  </application>
+
+</icegrid>

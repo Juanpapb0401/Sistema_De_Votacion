@@ -4,13 +4,98 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.zeroc.Ice.Communicator;
+import com.zeroc.Ice.ObjectPrx;
+import com.zeroc.Ice.Util;
+
+import app.ServicePrx;
+
 public class ConsultarPuesto {
 
-    private final ConexionBD conexion = new ConexionBD();
     private final Scanner scanner = new Scanner(System.in);
+    private Communicator communicator;
+    private ServicePrx servicePrx;
 
     public static void main(String[] args) {
-        new ConsultarPuesto().run();
+        ConsultarPuesto consulta = new ConsultarPuesto();
+        consulta.inicializarIceGrid();
+        consulta.run();
+        consulta.cerrarConexion();
+    }
+    
+    private void inicializarIceGrid() {
+        try {
+            System.out.println("Conectando al sistema de votación a través de IceGrid...");
+            
+            // Inicializar comunicador con localizador IceGrid
+            String[] initData = {
+                "--Ice.Default.Locator=SistemaVotacion/Locator:default -h localhost -p 4061"
+            };
+            communicator = Util.initialize(initData);
+            
+            // Obtener referencia con load balancing automático usando IceGrid
+            // IceGrid distribuirá automáticamente entre las instancias disponibles
+            ObjectPrx serviceBase = communicator.stringToProxy("Service@SistemaVotacionApp.VotingServerTemplate");
+            servicePrx = ServicePrx.checkedCast(serviceBase);
+            
+            if (servicePrx == null) {
+                throw new RuntimeException("No se pudo conectar al servicio de votación");
+            }
+            
+            System.out.println("Conexión establecida exitosamente con IceGrid");
+            
+        } catch (Exception e) {
+            System.err.println("Error al conectar con IceGrid: " + e.getMessage());
+            System.err.println("Asegúrese de que:");
+            System.err.println("1. icegridregistry esté corriendo");
+            System.err.println("2. icegridnode esté corriendo");
+            System.err.println("3. La aplicación esté desplegada");
+            throw new RuntimeException("No se pudo establecer conexión con el broker", e);
+        }
+    }
+    
+    private void cerrarConexion() {
+        if (communicator != null) {
+            communicator.destroy();
+        }
+    }
+    
+    // Método que reemplaza ConexionBD usando IceGrid
+    private List<Map<String, java.lang.Object>> getInfoBDWithParams(String sqlQuery, java.lang.Object... params) {
+        try {
+            System.out.println("Ejecutando consulta a través de IceGrid...");
+            
+            // Convertir parámetros a String array
+            String[] stringParams = new String[params.length];
+            for (int i = 0; i < params.length; i++) {
+                stringParams[i] = params[i] != null ? params[i].toString() : "";
+            }
+            
+            // Llamar al método consultarBD del servidor a través de IceGrid
+            String[] resultArray = servicePrx.consultarBD(sqlQuery, stringParams);
+            
+            // Convertir resultado de String array a List<Map<String, Object>>
+            List<Map<String, java.lang.Object>> resultList = new java.util.ArrayList<>();
+            
+            if (resultArray.length >= 2 && !resultArray[0].equals("ERROR")) {
+                Map<String, java.lang.Object> resultMap = new java.util.HashMap<>();
+                
+                // Los resultados vienen en pares key-value
+                for (int i = 0; i < resultArray.length - 1; i += 2) {
+                    String key = resultArray[i];
+                    String value = resultArray[i + 1];
+                    resultMap.put(key, value);
+                }
+                
+                resultList.add(resultMap);
+            }
+            
+            return resultList;
+            
+        } catch (Exception e) {
+            System.err.println("Error al consultar base de datos a través de IceGrid: " + e.getMessage());
+            throw new RuntimeException("Error en consulta remota", e);
+        }
     }
 
     private void run() {
@@ -48,7 +133,7 @@ public class ConsultarPuesto {
             JOIN departamento d ON d.id = m.departamento_id
             WHERE c.documento = ?""";
         try {
-            List<Map<String, Object>> rows = conexion.getInfoBDWithParams(sql, cedula);
+            List<Map<String, java.lang.Object>> rows = getInfoBDWithParams(sql, cedula);
             if (rows.isEmpty()) {
                 System.out.println("No se encontró información para la cédula " + cedula);
             } else {

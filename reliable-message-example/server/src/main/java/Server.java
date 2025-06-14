@@ -1,4 +1,5 @@
 import com.zeroc.Ice.Communicator;
+import com.zeroc.Ice.Identity;
 import com.zeroc.Ice.ObjectAdapter;
 import com.zeroc.Ice.Util;
 
@@ -30,11 +31,37 @@ public class Server {
     }
     
     public static void main(String[] args) {
-        Communicator com = Util.initialize();
-        ServiceImp imp = new ServiceImp();
-        ObjectAdapter adapter = com.createObjectAdapterWithEndpoints("Server", "tcp -h localhost -p 10012");
-        adapter.add(imp, Util.stringToIdentity("Service"));
-        adapter.activate();
-        com.waitForShutdown();
+        int status = 0;
+        java.util.List<String> extraArgs = new java.util.ArrayList<String>();
+
+        // Try with resources block - communicator se destruye automáticamente
+        try(Communicator communicator = Util.initialize(args, extraArgs)) {
+            
+            // Shutdown hook para destruir communicator durante JVM shutdown
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> communicator.destroy()));
+
+            if(!extraArgs.isEmpty()) {
+                System.err.println("too many arguments");
+                status = 1;
+            } else {
+                VotingServiceImp imp = new VotingServiceImp();
+                
+                // Crear adapter - el nombre debe coincidir con application.xml
+                ObjectAdapter adapter = communicator.createObjectAdapter("Server");
+                
+                // Obtener Identity desde las propiedades (configurado en IceGrid)
+                com.zeroc.Ice.Properties properties = communicator.getProperties();
+                Identity id = Util.stringToIdentity(properties.getProperty("Identity"));
+                
+                adapter.add(imp, id);
+                adapter.activate();
+
+                System.out.println("Servidor de votación iniciado correctamente");
+                communicator.waitForShutdown();
+            }
+        }
+        
+        System.exit(status);
     }
+        
 }
