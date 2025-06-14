@@ -1,12 +1,15 @@
 <state>
-  <timestamp value='1748623665241' />
+  <timestamp value='1749940223700' />
   <sourceSet name='default'>
-    <source name='/home/swarch/reliable-message-example/Service.ice'>
-      <file name='/home/swarch/reliable-message-example/client/build/generated-src/app/Service.java' />
-      <file name='/home/swarch/reliable-message-example/client/build/generated-src/app/ServicePrx.java' />
-      <file name='/home/swarch/reliable-message-example/client/build/generated-src/app/_ServicePrxI.java' />
+    <source name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\Service.ice'>
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\Service.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\VoteStation.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\ServicePrx.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\_ServicePrxI.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\VoteStationPrx.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\sistemaVotacion\build\generated-src\app\_VoteStationPrxI.java' />
     </source>
-    <arg value='/opt/Ice-3.7.9/bin/slice2java' />
-    <arg value='-I/opt/Ice-3.7.9/slice' />
+    <arg value='C:\Program Files\ZeroC\Ice-3.7.10\\bin\slice2java.exe' />
+    <arg value='-IC:\Program Files\ZeroC\Ice-3.7.10\\slice' />
   </sourceSet>
 </state>

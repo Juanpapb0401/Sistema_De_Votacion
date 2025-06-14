@@ -4,10 +4,52 @@ import com.zeroc.Ice.ObjectAdapter;
 import com.zeroc.Ice.Util;
 
 import model.Vote;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Server {
 
     private static final ManejadorDB db = ManejadorDB.getInstance();
+    private static Map<Integer, Map<Integer, Integer>> mesaVotes = new HashMap<>();
+    private static List<String> candidateNames = new ArrayList<>();
+    private static final String CANDIDATES_FILE_PATH = "sistemaVotacion/src/main/resources/Candidatos.txt";
+
+    static {
+        loadCandidateNames();
+    }
+
+    private static void loadCandidateNames() {
+        try {
+            File candidatesFile = new File(CANDIDATES_FILE_PATH);
+            if (candidatesFile.exists()) {
+                Scanner scanner = new Scanner(candidatesFile);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine().trim();
+                    if (!line.isEmpty()) {
+                        candidateNames.add(line);
+                    }
+                }
+                scanner.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cargar nombres de candidatos: " + e.getMessage());
+        }
+    }
+
+    private static String getCandidateName(int candidateId) {
+        if (candidateId >= 0 && candidateId < candidateNames.size()) {
+            return candidateNames.get(candidateId);
+        }
+        return "Desconocido";
+    }
 
     public static java.util.List<java.util.Map<String, Object>> getInfo(String sqlQuery) {
         try {
@@ -25,58 +67,84 @@ public class Server {
         }
     }
 
-    public static void addNewVotes(int candidateId, int userId) {
+    public static void addNewVotes(int candidateId, int userId, int mesaId) {
         Vote vote = new Vote(candidateId, userId);
         VoteManager.getInstance().registerVote(vote);
+        
+        // Actualizar votos por mesa
+        mesaVotes.computeIfAbsent(mesaId, k -> new HashMap<>());
+        Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
+        mesaVoteCount.put(candidateId, mesaVoteCount.getOrDefault(candidateId, 0) + 1);
+        
+        // Guardar archivo parcial
+        savePartialFile(mesaId);
     }
-    
-    public static void main(String[] args) {
-        int status = 0;
-        java.util.List<String> extraArgs = new java.util.ArrayList<String>();
 
-        // Try with resources block - communicator se destruye automáticamente
-        try(Communicator communicator = Util.initialize(args, extraArgs)) {
+    private static void savePartialFile(int mesaId) {
+        String fileName = "partial-" + mesaId + ".csv";
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write("candidateId,candidateName,totalVotes\n");
             
-            // Shutdown hook para destruir communicator durante JVM shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> communicator.destroy()));
-
-            if(!extraArgs.isEmpty()) {
-                System.err.println("too many arguments");
-                status = 1;
-            } else {
-                VotingServiceImp imp = new VotingServiceImp();
-
-                // Obtener propiedades de IceGrid
-                com.zeroc.Ice.Properties properties = communicator.getProperties();
-                
-                // Obtener el índice del servidor desde las propiedades
-                String serverIndex = properties.getPropertyWithDefault("ServerIndex", "1");
-                
-                // Crear adapter con nombre dinámico que coincida con application.xml
-                String adapterName = "Server-" + serverIndex;
-                ObjectAdapter adapter = communicator.createObjectAdapter(adapterName);
-                
-                // Obtener Identity desde las propiedades (configurado en IceGrid)
-                Identity id = Util.stringToIdentity(properties.getProperty("Identity"));
-                
-                System.out.println("Iniciando servidor con adapter: " + adapterName + " e identity: " + id.name);
-
-                adapter.add(imp, id);
-                
-                // Agregar el servicio RMDestination con un identity específico
-                RMDestinationImpl rmDestination = new RMDestinationImpl();
-                adapter.add(rmDestination, Util.stringToIdentity("RMDestination"));
-                
-                System.out.println("Servicio RMDestination registrado con identity: RMDestination");
-                
-                adapter.activate();
-
-                System.out.println("Servidor de votación iniciado correctamente");
-                communicator.waitForShutdown();
+            Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
+            for (Map.Entry<Integer, Integer> entry : mesaVoteCount.entrySet()) {
+                int candidateId = entry.getKey();
+                String candidateName = getCandidateName(candidateId);
+                int totalVotes = entry.getValue();
+                writer.write(candidateId + "," + candidateName + "," + totalVotes + "\n");
             }
+        } catch (IOException e) {
+            System.err.println("Error al escribir archivo " + fileName + ": " + e.getMessage());
         }
-        
-        System.exit(status);
     }
-        
+
+    private static void copyVotesFile() {
+        try {
+            File sourceFile = new File("reliableServer_votos.csv");
+            File destFile = new File("resume.csv");
+            
+            if (sourceFile.exists()) {
+                Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Archivo resume.csv generado exitosamente");
+            } else {
+                System.out.println("No se encontró el archivo reliableServer_votos.csv");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al copiar el archivo: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        // Iniciar thread para escuchar la tecla 'q'
+        new Thread(() -> {
+            System.out.println("Presione 'q' para cerrar el servidor...");
+            while (true) {
+                try {
+                    int input = System.in.read();
+                    if (input == 'q' || input == 'Q') {
+                        System.out.println("Cerrando servidor...");
+                        copyVotesFile();
+                        System.exit(0);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        // Iniciar el servidor Ice
+        try (Communicator communicator = Util.initialize(args)) {
+            ObjectAdapter adapter = communicator.createObjectAdapter("VoteService");
+            
+            // Registrar el servicio de votación
+            adapter.add(new VotingServiceImp(), new Identity("VotingService", "VoteService"));
+            
+            // Registrar el servicio RMDestination con el identity correcto
+            adapter.add(new RMDestinationImpl(), new Identity("RMDestination", ""));
+            
+            adapter.activate();
+            
+            System.out.println("Servidor iniciado. Esperando conexiones...");
+            communicator.waitForShutdown();
+        }
+    }
 }

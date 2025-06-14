@@ -1,3 +1,14 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.zeroc.gradle.ice-builder.slice'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 slice {
     java {
         files = [file("ReliableMessage.ice")]
@@ -8,17 +19,15 @@ repositories {
     mavenCentral()
 }
 
-dependencies{
+dependencies {
     implementation 'com.zeroc:ice:3.7.2'
-
 }
 
-
 jar {
-        manifest {
-            attributes(
-                "Main-Class": project.name.capitalize(),
-                "Class-Path": configurations.runtimeClasspath.resolve().collect { it.toURI() }.join(' ')
-            )
-        }
+    manifest {
+        attributes(
+            "Main-Class": project.name.capitalize(),
+            "Class-Path": configurations.runtimeClasspath.resolve().collect { it.toURI() }.join(' ')
+        )
     }
+}

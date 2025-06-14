@@ -1,18 +1,18 @@
 <state>
-  <timestamp value='1748623665255' />
+  <timestamp value='1749931941155' />
   <sourceSet name='default'>
-    <source name='/home/swarch/reliable-message-example/reliableServer/ReliableMessage.ice'>
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/ACKService.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/RMDestination.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/RMSource.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/ACKServicePrx.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/_ACKServicePrxI.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/RMDestinationPrx.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/_RMDestinationPrxI.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/RMSourcePrx.java' />
-      <file name='/home/swarch/reliable-message-example/reliableServer/build/generated-src/reliableMessage/_RMSourcePrxI.java' />
+    <source name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\ReliableMessage.ice'>
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\ACKService.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\RMDestination.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\RMSource.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\ACKServicePrx.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\_ACKServicePrxI.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\RMDestinationPrx.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\_RMDestinationPrxI.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\RMSourcePrx.java' />
+      <file name='C:\Users\guzma\Desktop\Sistema_De_Votacion\reliable-message-example\reliableServer\build\generated-src\reliableMessage\_RMSourcePrxI.java' />
     </source>
-    <arg value='/opt/Ice-3.7.9/bin/slice2java' />
-    <arg value='-I/opt/Ice-3.7.9/slice' />
+    <arg value='C:\Program Files\ZeroC\Ice-3.7.10\\bin\slice2java.exe' />
+    <arg value='-IC:\Program Files\ZeroC\Ice-3.7.10\\slice' />
   </sourceSet>
 </state>

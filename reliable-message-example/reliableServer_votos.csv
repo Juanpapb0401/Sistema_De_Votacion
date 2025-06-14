@@ -1,5 +1,5 @@
-CandidatoID,Votos
-0,6
-1,2
-2,2
-3,2
+candidateId,candidateName,totalVotes
+0,Eder,2
+1,Chontico,1
+2,Petro,2
+3,Cabal,2
