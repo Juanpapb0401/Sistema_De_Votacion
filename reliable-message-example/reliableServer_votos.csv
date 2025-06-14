@@ -1,5 +1,2 @@
-CandidatoID,Votos
-0,6
-1,2
-2,2
-3,2
+candidateId,candidateName,totalVotes
+0,Eder,1

@@ -15,6 +15,7 @@ module reliableMessage{
     interface RMSource{
         void setServerProxy(RMDestination* destination);
         void sendMessage(Message msg);
+        void closeElection(int mesaId);
     }
 
 }

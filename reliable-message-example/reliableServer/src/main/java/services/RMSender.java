@@ -40,6 +40,10 @@ public class RMSender implements RMSource{
         notification.setService(destination);
     }
 
-
-    
+    @Override
+    public void closeElection(int mesaId, Current current) {
+        System.out.println("Cerrando jornada electoral para la mesa " + mesaId);
+        VoteManager.getInstance().closeElection(mesaId);
+        System.out.println("Jornada electoral cerrada. Archivos CSV generados.");
+    }    
 }
