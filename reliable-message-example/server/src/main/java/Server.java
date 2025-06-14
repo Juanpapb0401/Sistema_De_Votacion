@@ -45,20 +45,28 @@ public class Server {
                 status = 1;
             } else {
                 VotingServiceImp imp = new VotingServiceImp();
+
+                // Obtener propiedades de IceGrid
+                com.zeroc.Ice.Properties properties = communicator.getProperties();
                 
-                // Crear adapter - el nombre debe coincidir con application.xml
-                ObjectAdapter adapter = communicator.createObjectAdapter("Server");
+                // Obtener el índice del servidor desde las propiedades
+                String serverIndex = properties.getPropertyWithDefault("ServerIndex", "1");
+                
+                // Crear adapter con nombre dinámico que coincida con application.xml
+                String adapterName = "Server-" + serverIndex;
+                ObjectAdapter adapter = communicator.createObjectAdapter(adapterName);
                 
                 // Obtener Identity desde las propiedades (configurado en IceGrid)
-                com.zeroc.Ice.Properties properties = communicator.getProperties();
                 Identity id = Util.stringToIdentity(properties.getProperty("Identity"));
                 
-                adapter.add(imp, id);
-                adapter.activate();
+                System.out.println("Iniciando servidor con adapter: " + adapterName + " e identity: " + id.name);
+
+        adapter.add(imp, id);
+        adapter.activate();
 
                 System.out.println("Servidor de votación iniciado correctamente");
                 communicator.waitForShutdown();
-            }
+    }
         }
         
         System.exit(status);

@@ -1,0 +1,18 @@
+# Configuración del ProxyCache
+ProxyCache-1.Endpoints=tcp -h localhost
+ProxyCache-1.AdapterId=ProxyCache-1
+
+# Configuración del locator para IceGrid
+Ice.Default.Locator=SistemaVotacion/Locator:default -h localhost -p 4061
+
+# Configuración de logging
+Ice.Trace.Network=1
+Ice.Trace.Protocol=1
+
+# Pool de conexiones
+Ice.ThreadPool.Client.Size=10
+Ice.ThreadPool.Client.SizeMax=50
+
+# Timeouts
+Ice.Override.ConnectTimeout=5000
+Ice.Override.Timeout=30000 

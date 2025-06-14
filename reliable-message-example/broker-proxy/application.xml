@@ -2,7 +2,23 @@
 
   <application name="SistemaVotacionApp">
 
-    <!-- Template para múltiples instancias del servidor -->
+    <!-- Template para el ProxyCache -->
+    <server-template id="ProxyCacheTemplate">
+      <parameter name="index"/>
+      <server id="ProxyCache-${index}" exe="java" activation="on-demand">
+        <option>-jar</option>
+        <option>../ProxyCache/build/libs/ProxyCache.jar</option>
+        <adapter name="ProxyCache-${index}" endpoints="tcp -h localhost">
+          <object identity="ProxyCache-${index}" type="::app::Service" property="Identity"/>
+        </adapter>
+        <properties>
+          <property name="AdapterName" value="ProxyCache-${index}"/>
+          <property name="IdentityName" value="ProxyCache-${index}"/>
+        </properties>
+      </server>
+    </server-template>
+
+    <!-- Template para múltiples instancias del servidor backend -->
     <server-template id="VotingServerTemplate">
       <parameter name="index"/>
       <server id="VotingServer-${index}" exe="java" activation="on-demand">
@@ -18,7 +34,11 @@
     </server-template>
 
     <node name="node1">
-      <!-- Múltiples instancias del servidor para alto throughput -->
+      <!-- ProxyCache instances (front-end) -->
+      <server-instance template="ProxyCacheTemplate" index="1"/>
+      <server-instance template="ProxyCacheTemplate" index="2"/>
+      
+      <!-- Backend server instances -->
       <server-instance template="VotingServerTemplate" index="1"/>
       <server-instance template="VotingServerTemplate" index="2"/>
       <server-instance template="VotingServerTemplate" index="3"/>

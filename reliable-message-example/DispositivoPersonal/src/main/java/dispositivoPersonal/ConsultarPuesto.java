@@ -33,16 +33,16 @@ public class ConsultarPuesto {
             };
             communicator = Util.initialize(initData);
             
-            // Obtener referencia con load balancing automático usando IceGrid
-            // IceGrid distribuirá automáticamente entre las instancias disponibles
-            ObjectPrx serviceBase = communicator.stringToProxy("Service@SistemaVotacionApp.VotingServerTemplate");
+            // Conectar al ProxyCache en lugar de directamente a los servidores
+            // El ProxyCache actuará como intermediario con cache
+            ObjectPrx serviceBase = communicator.stringToProxy("ProxyCache-1");
             servicePrx = ServicePrx.checkedCast(serviceBase);
             
             if (servicePrx == null) {
-                throw new RuntimeException("No se pudo conectar al servicio de votación");
+                throw new RuntimeException("No se pudo conectar al ProxyCache");
             }
             
-            System.out.println("Conexión establecida exitosamente con IceGrid");
+            System.out.println("Conexión establecida exitosamente con ProxyCache a través de IceGrid");
             
         } catch (Exception e) {
             System.err.println("Error al conectar con IceGrid: " + e.getMessage());
@@ -63,7 +63,7 @@ public class ConsultarPuesto {
     // Método que reemplaza ConexionBD usando IceGrid
     private List<Map<String, java.lang.Object>> getInfoBDWithParams(String sqlQuery, java.lang.Object... params) {
         try {
-            System.out.println("Ejecutando consulta a través de IceGrid...");
+            System.out.println("Ejecutando consulta a través de ProxyCache...");
             
             // Convertir parámetros a String array
             String[] stringParams = new String[params.length];
@@ -71,7 +71,7 @@ public class ConsultarPuesto {
                 stringParams[i] = params[i] != null ? params[i].toString() : "";
             }
             
-            // Llamar al método consultarBD del servidor a través de IceGrid
+            // Llamar al método consultarBD del ProxyCache (que puede usar cache o backend)
             String[] resultArray = servicePrx.consultarBD(sqlQuery, stringParams);
             
             // Convertir resultado de String array a List<Map<String, Object>>
@@ -93,7 +93,7 @@ public class ConsultarPuesto {
             return resultList;
             
         } catch (Exception e) {
-            System.err.println("Error al consultar base de datos a través de IceGrid: " + e.getMessage());
+            System.err.println("Error al consultar base de datos a través de ProxyCache: " + e.getMessage());
             throw new RuntimeException("Error en consulta remota", e);
         }
     }

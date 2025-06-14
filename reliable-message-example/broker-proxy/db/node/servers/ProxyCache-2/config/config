@@ -1,0 +1,14 @@
+# Configuration file (06/14/25 12:00:51.107)
+
+# Server configuration
+Ice.Admin.ServerId=ProxyCache-2
+Ice.Admin.Endpoints=tcp -h localhost
+Ice.ProgramName=ProxyCache-2
+# Object adapter ProxyCache-2
+ProxyCache-2.Endpoints=tcp -h localhost -p 90012
+ProxyCache-2.AdapterId=ProxyCache-2.ProxyCache-2
+# Server descriptor properties
+Identity=ProxyCache-2
+AdapterName=ProxyCache-2
+IdentityName=ProxyCache-2
+Ice.Default.Locator=SistemaVotacion/Locator:default -h localhost -p 4061
