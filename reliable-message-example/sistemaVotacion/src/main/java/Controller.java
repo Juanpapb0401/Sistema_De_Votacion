@@ -69,14 +69,12 @@ public class Controller {
                         conexion.getInfoBDWithParams("SELECT mesa_id FROM ciudadano WHERE documento = ?", citizenId);
 
                 if (res.isEmpty()) {
-                    System.out.println("La cédula no se encuentra registrada.");
                     System.out.println(voteStation.vote(citizenId, 0, null));
                 } else {
                     int mesaAsignada = ((Number) res.get(0).get("mesa_id")).intValue();
                     if (mesaAsignada == mesaActual) {
                         // Verificar si ya votó
                         if (VoteRegistry.hasVoted(citizenId)) {
-                            System.out.println("Esta cédula ya registró su voto en esta mesa.");
                             System.out.println(voteStation.vote(citizenId, 0, null));
                         } else {
                             System.out.println(voteStation.vote(citizenId, 0, null));
@@ -84,7 +82,6 @@ public class Controller {
                             userId = Integer.parseInt(citizenId);
                         }
                     } else {
-                        System.out.println("Esta cédula no está asignada a la mesa actual.");
                         System.out.println(voteStation.vote(citizenId, 0, null));
                     }
                 }
