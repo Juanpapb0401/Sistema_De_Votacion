@@ -42,6 +42,15 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.1'
     implementation project(':reliableServer')
     implementation project(':server')
+    
+    // Dependencias de prueba
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {
