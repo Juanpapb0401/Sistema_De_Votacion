@@ -4,6 +4,10 @@ import com.zeroc.Ice.ObjectAdapter;
 import com.zeroc.Ice.Util;
 
 import model.Vote;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class Server {
 
@@ -29,54 +33,55 @@ public class Server {
         Vote vote = new Vote(candidateId, userId);
         VoteManager.getInstance().registerVote(vote);
     }
-    
-    public static void main(String[] args) {
-        int status = 0;
-        java.util.List<String> extraArgs = new java.util.ArrayList<String>();
 
-        // Try with resources block - communicator se destruye automáticamente
-        try(Communicator communicator = Util.initialize(args, extraArgs)) {
+    private static void copyVotesFile() {
+        try {
+            File sourceFile = new File("reliableServer_votos.csv");
+            File destFile = new File("resume.csv");
             
-            // Shutdown hook para destruir communicator durante JVM shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> communicator.destroy()));
-
-            if(!extraArgs.isEmpty()) {
-                System.err.println("too many arguments");
-                status = 1;
+            if (sourceFile.exists()) {
+                Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Archivo resume.csv generado exitosamente");
             } else {
-                VotingServiceImp imp = new VotingServiceImp();
-
-                // Obtener propiedades de IceGrid
-                com.zeroc.Ice.Properties properties = communicator.getProperties();
-                
-                // Obtener el índice del servidor desde las propiedades
-                String serverIndex = properties.getPropertyWithDefault("ServerIndex", "1");
-                
-                // Crear adapter con nombre dinámico que coincida con application.xml
-                String adapterName = "Server-" + serverIndex;
-                ObjectAdapter adapter = communicator.createObjectAdapter(adapterName);
-                
-                // Obtener Identity desde las propiedades (configurado en IceGrid)
-                Identity id = Util.stringToIdentity(properties.getProperty("Identity"));
-                
-                System.out.println("Iniciando servidor con adapter: " + adapterName + " e identity: " + id.name);
-
-                adapter.add(imp, id);
-                
-                // Agregar el servicio RMDestination con un identity específico
-                RMDestinationImpl rmDestination = new RMDestinationImpl();
-                adapter.add(rmDestination, Util.stringToIdentity("RMDestination"));
-                
-                System.out.println("Servicio RMDestination registrado con identity: RMDestination");
-                
-                adapter.activate();
-
-                System.out.println("Servidor de votación iniciado correctamente");
-                communicator.waitForShutdown();
+                System.out.println("No se encontró el archivo reliableServer_votos.csv");
             }
+        } catch (IOException e) {
+            System.err.println("Error al copiar el archivo: " + e.getMessage());
         }
-        
-        System.exit(status);
     }
-        
+
+    public static void main(String[] args) {
+        // Iniciar thread para escuchar la tecla 'q'
+        new Thread(() -> {
+            System.out.println("Presione 'q' para cerrar el servidor...");
+            while (true) {
+                try {
+                    int input = System.in.read();
+                    if (input == 'q' || input == 'Q') {
+                        System.out.println("Cerrando servidor...");
+                        copyVotesFile();
+                        System.exit(0);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        // Iniciar el servidor Ice
+        try (Communicator communicator = Util.initialize(args)) {
+            ObjectAdapter adapter = communicator.createObjectAdapter("VoteService");
+            
+            // Registrar el servicio de votación
+            adapter.add(new VotingServiceImp(), new Identity("VotingService", "VoteService"));
+            
+            // Registrar el servicio RMDestination con el identity correcto
+            adapter.add(new RMDestinationImpl(), new Identity("RMDestination", ""));
+            
+            adapter.activate();
+            
+            System.out.println("Servidor iniciado. Esperando conexiones...");
+            communicator.waitForShutdown();
+        }
+    }
 }
