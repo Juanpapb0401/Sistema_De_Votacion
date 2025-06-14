@@ -1,5 +1,13 @@
 plugins {
+    id 'java'
+    id 'application'
+    id 'com.zeroc.gradle.ice-builder.slice'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 shadowJar {
@@ -29,14 +37,12 @@ application {
             : 'sistemaVotacion.SistemaVotacion'
 }
 
-dependencies{
+dependencies {
     implementation 'com.zeroc:ice:3.7.2'
     implementation 'org.postgresql:postgresql:42.7.1'
     implementation project(':reliableServer')
     implementation project(':server')
 }
-
-
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

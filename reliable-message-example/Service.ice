@@ -7,4 +7,8 @@ module app{
         void print();
         StringSeq consultarBD(string sqlQuery, StringSeq params);
     }
+
+    interface VoteStation {
+        int vote(string document, int candidateId);
+    }
 }

@@ -1,3 +1,14 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.zeroc.gradle.ice-builder.slice'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 slice {
     java {
         files = [file("../Service.ice")]
