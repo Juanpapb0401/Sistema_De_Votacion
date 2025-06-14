@@ -5,13 +5,51 @@ import com.zeroc.Ice.Util;
 
 import model.Vote;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Server {
 
     private static final ManejadorDB db = ManejadorDB.getInstance();
+    private static Map<Integer, Map<Integer, Integer>> mesaVotes = new HashMap<>();
+    private static List<String> candidateNames = new ArrayList<>();
+    private static final String CANDIDATES_FILE_PATH = "sistemaVotacion/src/main/resources/Candidatos.txt";
+
+    static {
+        loadCandidateNames();
+    }
+
+    private static void loadCandidateNames() {
+        try {
+            File candidatesFile = new File(CANDIDATES_FILE_PATH);
+            if (candidatesFile.exists()) {
+                Scanner scanner = new Scanner(candidatesFile);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine().trim();
+                    if (!line.isEmpty()) {
+                        candidateNames.add(line);
+                    }
+                }
+                scanner.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cargar nombres de candidatos: " + e.getMessage());
+        }
+    }
+
+    private static String getCandidateName(int candidateId) {
+        if (candidateId >= 0 && candidateId < candidateNames.size()) {
+            return candidateNames.get(candidateId);
+        }
+        return "Desconocido";
+    }
 
     public static java.util.List<java.util.Map<String, Object>> getInfo(String sqlQuery) {
         try {
@@ -29,9 +67,34 @@ public class Server {
         }
     }
 
-    public static void addNewVotes(int candidateId, int userId) {
+    public static void addNewVotes(int candidateId, int userId, int mesaId) {
         Vote vote = new Vote(candidateId, userId);
         VoteManager.getInstance().registerVote(vote);
+        
+        // Actualizar votos por mesa
+        mesaVotes.computeIfAbsent(mesaId, k -> new HashMap<>());
+        Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
+        mesaVoteCount.put(candidateId, mesaVoteCount.getOrDefault(candidateId, 0) + 1);
+        
+        // Guardar archivo parcial
+        savePartialFile(mesaId);
+    }
+
+    private static void savePartialFile(int mesaId) {
+        String fileName = "partial-" + mesaId + ".csv";
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write("candidateId,candidateName,totalVotes\n");
+            
+            Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
+            for (Map.Entry<Integer, Integer> entry : mesaVoteCount.entrySet()) {
+                int candidateId = entry.getKey();
+                String candidateName = getCandidateName(candidateId);
+                int totalVotes = entry.getValue();
+                writer.write(candidateId + "," + candidateName + "," + totalVotes + "\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al escribir archivo " + fileName + ": " + e.getMessage());
+        }
     }
 
     private static void copyVotesFile() {
