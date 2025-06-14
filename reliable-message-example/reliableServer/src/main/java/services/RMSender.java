@@ -36,6 +36,7 @@ public class RMSender implements RMSource{
     }
     @Override
     public void setServerProxy(RMDestinationPrx destination, Current current){
+        System.out.println("Configurando proxy del servidor: " + destination);
         notification.setService(destination);
     }
 

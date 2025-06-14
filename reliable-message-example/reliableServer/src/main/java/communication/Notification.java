@@ -19,6 +19,7 @@ public class Notification {
     }
 
     public void setService(RMDestinationPrx service) {
+        System.out.println("Configurando servicio con proxy: " + service);
         this.service = service;
         // Resetear el flag cuando se establece un nuevo servicio
         connectionWarningShown = false;
@@ -26,9 +27,11 @@ public class Notification {
 
     public boolean sendMessage(ReliableMessage message) throws ConnectionRefusedException {
         try {
+            System.out.println("Intentando enviar mensaje al servidor...");
             service.reciveMessage(message, ackService);
             // Si llegamos aquí, la conexión fue exitosa
             connectionWarningShown = false;
+            System.out.println("Mensaje enviado exitosamente");
             return true;
         } catch (ConnectionRefusedException e) {
             if (!connectionWarningShown) {

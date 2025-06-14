@@ -34,7 +34,8 @@ public class Controller {
         this.validCitizens = new HashSet<>();
         this.com = Util.initialize();
         this.rm = RMSourcePrx.checkedCast(com.stringToProxy("Sender:tcp -h localhost -p 10010"));
-        this.dest = RMDestinationPrx.uncheckedCast(com.stringToProxy("Service:tcp -h localhost -p 10012"));
+        this.dest = RMDestinationPrx.uncheckedCast(com.stringToProxy("RMDestination:tcp -h localhost -p 10000"));
+        System.out.println("Conectando a servidor en: RMDestination:tcp -h localhost -p 10000");
     }
 
     public static void main(String[] args)throws Exception {

@@ -1,6 +1,6 @@
 slice {
     java {
-        files = [file("../Service.ice")]
+        files = [file("../Service.ice"), file("ReliableMessage.ice")]
     }
 }
 repositories {

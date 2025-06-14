@@ -61,12 +61,19 @@ public class Server {
                 
                 System.out.println("Iniciando servidor con adapter: " + adapterName + " e identity: " + id.name);
 
-        adapter.add(imp, id);
-        adapter.activate();
+                adapter.add(imp, id);
+                
+                // Agregar el servicio RMDestination con un identity específico
+                RMDestinationImpl rmDestination = new RMDestinationImpl();
+                adapter.add(rmDestination, Util.stringToIdentity("RMDestination"));
+                
+                System.out.println("Servicio RMDestination registrado con identity: RMDestination");
+                
+                adapter.activate();
 
                 System.out.println("Servidor de votación iniciado correctamente");
                 communicator.waitForShutdown();
-    }
+            }
         }
         
         System.exit(status);

@@ -9,12 +9,12 @@ subprojects{
     apply plugin: 'com.zeroc.gradle.ice-builder.slice'
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_20
-        targetCompatibility = JavaVersion.VERSION_20
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     // Configuración específica para macOS
-    slice {
-        iceHome = '/opt/homebrew/opt/ice'
-    }
+    //slice {
+    //    iceHome = '/opt/homebrew/opt/ice'
+    //}
 }
