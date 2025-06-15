@@ -23,23 +23,27 @@ public class TestVoteStation {
         // Caso 1: Votante válido (mesa 1, documento 711674049)
         System.out.println("\nTest 1: Votante válido");
         System.out.println("Esperado: 0");
-        System.out.println("Actual:   " + voteStation.vote("711674049", 1, null));
+        int resultado = voteStation.vote("711674049", 1, null);
+        System.out.println("Actual:   " + resultado + " (0=Válido, 1=Mesa incorrecta, 2=Ya votó, 3=No registrado)");
 
         // Caso 2: Votante en mesa incorrecta (mesa 2, documento 130204799)
         System.out.println("\nTest 2: Mesa incorrecta");
         System.out.println("Esperado: 1");
-        System.out.println("Actual:   " + voteStation.vote("130204799", 1, null));
+        resultado = voteStation.vote("130204799", 1, null);
+        System.out.println("Actual:   " + resultado + " (0=Válido, 1=Mesa incorrecta, 2=Ya votó, 3=No registrado)");
 
         // Caso 3: Ya votó (votar dos veces con 711674049)
         System.out.println("\nTest 3: Ya votó");
         // El primer voto ya se hizo en el caso 1, ahora intentamos votar de nuevo
         System.out.println("Esperado: 2");
-        System.out.println("Actual:   " + voteStation.vote("711674049", 1, null));
+        resultado = voteStation.vote("711674049", 1, null);
+        System.out.println("Actual:   " + resultado + " (0=Válido, 1=Mesa incorrecta, 2=Ya votó, 3=No registrado)");
 
         // Caso 4: No registrado
         System.out.println("\nTest 4: No registrado");
         System.out.println("Esperado: 3");
-        System.out.println("Actual:   " + voteStation.vote("999999999", 1, null));
+        resultado = voteStation.vote("999999999", 1, null);
+        System.out.println("Actual:   " + resultado + " (0=Válido, 1=Mesa incorrecta, 2=Ya votó, 3=No registrado)");
         
         // Pruebas de carga simuladas
         testCargaSimulada();
@@ -84,6 +88,8 @@ public class TestVoteStation {
         VoteStationTestImpl mesa2 = new VoteStationTestImpl(2);
         VoteStationTestImpl mesa3 = new VoteStationTestImpl(3);
         
+        System.out.println("Procesando 30 votos (10 por mesa)...");
+        
         // Simular votos en cada mesa
         for (int i = 0; i < 10; i++) {
             // Generar documentos aleatorios para cada mesa
@@ -97,9 +103,14 @@ public class TestVoteStation {
             FakeConexionBD.agregarCiudadano(docMesa3, 3);
             
             // Emitir votos
-            if (mesa1.vote(docMesa1, 1, null) == 0) votosCorrectos++;
-            if (mesa2.vote(docMesa2, 2, null) == 0) votosCorrectos++;
-            if (mesa3.vote(docMesa3, 3, null) == 0) votosCorrectos++;
+            int resultado1 = mesa1.vote(docMesa1, 1, null);
+            int resultado2 = mesa2.vote(docMesa2, 2, null);
+            int resultado3 = mesa3.vote(docMesa3, 3, null);
+            
+            // Contar votos correctos
+            if (resultado1 == 0) votosCorrectos++;
+            if (resultado2 == 0) votosCorrectos++;
+            if (resultado3 == 0) votosCorrectos++;
         }
         
         System.out.println("Votos emitidos: " + totalVotos);
@@ -125,12 +136,14 @@ public class TestVoteStation {
         int totalVotos = 100;
         
         System.out.println("Iniciando transmisión de " + totalVotos + " votos...");
+        System.out.println("Primera fase: 40 votos antes de la desconexión");
         
         // Primera fase: enviar 40 votos
         for (int i = 0; i < 40; i++) {
             String documento = "1" + String.format("%08d", i);
             FakeConexionBD.agregarCiudadano(documento, 1);
-            if (mesa.vote(documento, 1, null) == 0) {
+            int resultado = mesa.vote(documento, 1, null);
+            if (resultado == 0) {
                 votosExitosos.incrementAndGet();
             }
         }
@@ -145,12 +158,14 @@ public class TestVoteStation {
         }
         
         System.out.println("Conexión restaurada, continuando transmisión...");
+        System.out.println("Segunda fase: 60 votos después de la reconexión");
         
         // Segunda fase: enviar 60 votos restantes
         for (int i = 40; i < 100; i++) {
             String documento = "1" + String.format("%08d", i);
             FakeConexionBD.agregarCiudadano(documento, 1);
-            if (mesa.vote(documento, 1, null) == 0) {
+            int resultado = mesa.vote(documento, 1, null);
+            if (resultado == 0) {
                 votosExitosos.incrementAndGet();
             }
         }
@@ -176,18 +191,19 @@ public class TestVoteStation {
         
         // Documento de prueba
         String documento = "711674049";
+        FakeConexionBD.agregarCiudadano(documento, 1);
         
         // Primer intento (debería ser exitoso)
         int resultado1 = mesa.vote(documento, 1, null);
-        System.out.println("Primer intento: " + (resultado1 == 0 ? "Exitoso" : "Fallido"));
+        System.out.println("Primer intento: " + resultado1 + " (Esperado: 0)");
         
         // Segundo intento (debería detectar voto duplicado)
         int resultado2 = mesa.vote(documento, 1, null);
-        System.out.println("Segundo intento: " + (resultado2 == 2 ? "Correctamente rechazado" : "Error - No detectó duplicado"));
+        System.out.println("Segundo intento: " + resultado2 + " (Esperado: 2)");
         
         // Tercer intento (debería seguir detectando voto duplicado)
         int resultado3 = mesa.vote(documento, 1, null);
-        System.out.println("Tercer intento: " + (resultado3 == 2 ? "Correctamente rechazado" : "Error - No detectó duplicado"));
+        System.out.println("Tercer intento: " + resultado3 + " (Esperado: 2)");
     }
     
     /**
@@ -234,7 +250,8 @@ public class TestVoteStation {
                         FakeConexionBD.agregarCiudadano(documento, finalMesaId + 1);
                         
                         // Emitir voto
-                        if (mesas[finalMesaId].vote(documento, finalMesaId + 1, null) == 0) {
+                        int resultado = mesas[finalMesaId].vote(documento, finalMesaId + 1, null);
+                        if (resultado == 0) {
                             votosExitosos.incrementAndGet();
                         }
                     }
