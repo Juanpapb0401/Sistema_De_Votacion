@@ -79,4 +79,14 @@ public class ManejadorDB {
         }
         return ps;
     }
+
+    // Agregar este método para guardar un nuevo voto en la tabla "votes"
+    public int addNewVotes(int candidateId, int userId, int mesaId) throws SQLException {
+        String sql = "INSERT INTO votes (candidate_id, user_id, mesa_id) VALUES (?, ?, ?)";
+        int rows = addData(sql, candidateId, userId, mesaId);
+        if (rows > 0) {
+            System.out.println("[BD] Voto insertado -> candidato=" + candidateId + ", usuario=" + userId + ", mesa=" + mesaId);
+        }
+        return rows;
+    }
 } 

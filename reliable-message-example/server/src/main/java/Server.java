@@ -72,7 +72,13 @@ public class Server {
         Vote vote = new Vote(candidateId, userId);
         VoteManager.getInstance().registerVote(vote);
         
-            
+        // Persistir también en la base de datos
+        try {
+            db.addNewVotes(candidateId, userId, mesaId);
+        } catch (java.sql.SQLException e) {
+            System.err.println("Error al insertar voto en la BD: " + e.getMessage());
+        }
+        
         mesaVotes.computeIfAbsent(mesaId, k -> new HashMap<>());
         Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
         mesaVoteCount.put(candidateId, mesaVoteCount.getOrDefault(candidateId, 0) + 1);
