@@ -12,16 +12,16 @@ import app.Service;
 
 public class VotingServiceImp implements Service {
     
-    // Thread Pool para manejo concurrente de consultas
-    private static final int THREAD_POOL_SIZE = 20; // 20 threads por instancia
+    
+    private static final int THREAD_POOL_SIZE = 20; 
     private final ExecutorService threadPool;
     
     public VotingServiceImp() {
-        // Inicializar thread pool con threads optimizados para I/O
+        
         this.threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE, r -> {
             Thread t = new Thread(r);
             t.setName("VotingService-Worker-" + t.getId());
-            t.setDaemon(true); // Threads daemon para shutdown limpio
+            t.setDaemon(true); 
             return t;
         });
         
@@ -35,19 +35,19 @@ public class VotingServiceImp implements Service {
 
     @Override
     public String[] consultarBD(String sqlQuery, String[] params, Current current) {
-        // Crear tarea para ejecutar en thread pool
+        
         Callable<String[]> queryTask = () -> {
             try {
                 long startTime = System.currentTimeMillis();
                 String threadName = Thread.currentThread().getName();
                 System.out.println("[" + threadName + "] Consultando BD: " + sqlQuery);
                 
-                // Log de parámetros
+                
                 if (params != null && params.length > 0) {
                     System.out.println("[" + threadName + "] Parámetros: " + java.util.Arrays.toString(params));
                 }
                 
-                // Usar los métodos estáticos existentes del Server
+                
                 List<Map<String, Object>> results;
                 if (params != null && params.length > 0) {
                     results = Server.getInfo(sqlQuery, (Object[]) params);
@@ -55,20 +55,20 @@ public class VotingServiceImp implements Service {
                     results = Server.getInfo(sqlQuery);
                 }
                 
-                // Log de resultados
+               
                 System.out.println("[" + threadName + "] Resultados encontrados: " + results.size());
                 if (!results.isEmpty()) {
                     System.out.println("[" + threadName + "] Primer resultado: " + results.get(0));
                 }
                 
-                // Convertir resultados a String array (simplificado)
+                
                 if (results.isEmpty()) {
                     return new String[0];
                 }
                 
-                // Convertir el primer resultado a formato string
+                
                 Map<String, Object> firstResult = results.get(0);
-                String[] resultArray = new String[firstResult.size() * 2]; // key-value pairs
+                String[] resultArray = new String[firstResult.size() * 2]; 
                 int index = 0;
                 
                 for (Map.Entry<String, Object> entry : firstResult.entrySet()) {
@@ -89,11 +89,11 @@ public class VotingServiceImp implements Service {
         };
         
         try {
-            // Ejecutar consulta en thread pool con timeout
+           
             Future<String[]> future = threadPool.submit(queryTask);
             
-            // Timeout de 5 segundos para evitar bloqueos
-            return future.get(5, TimeUnit.SECONDS);
+            
+            return future.get(10, TimeUnit.SECONDS);
             
         } catch (Exception e) {
             System.err.println("Error en thread pool execution: " + e.getMessage());
@@ -102,7 +102,7 @@ public class VotingServiceImp implements Service {
         }
     }
     
-    // Método para shutdown limpio del thread pool
+   
     public void shutdown() {
         System.out.println("Cerrando thread pool...");
         threadPool.shutdown();

@@ -2,9 +2,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-/**
- * Representa una entrada en el cache con tiempo de vida (TTL)
- */
+
 public class CacheEntry {
     private final List<String> data;
     private final LocalDateTime timestamp;

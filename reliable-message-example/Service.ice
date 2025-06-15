@@ -11,4 +11,8 @@ module app{
     interface VoteStation {
         int vote(string document, int candidateId);
     }
+
+    interface QueryStation {
+        string query(string document);
+    }
 }

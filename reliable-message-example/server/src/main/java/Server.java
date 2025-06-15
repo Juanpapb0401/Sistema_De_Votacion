@@ -1,19 +1,20 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
 import com.zeroc.Ice.Communicator;
 import com.zeroc.Ice.Identity;
 import com.zeroc.Ice.ObjectAdapter;
 import com.zeroc.Ice.Util;
 
 import model.Vote;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Server {
 
@@ -71,12 +72,12 @@ public class Server {
         Vote vote = new Vote(candidateId, userId);
         VoteManager.getInstance().registerVote(vote);
         
-        // Actualizar votos por mesa
+            
         mesaVotes.computeIfAbsent(mesaId, k -> new HashMap<>());
         Map<Integer, Integer> mesaVoteCount = mesaVotes.get(mesaId);
         mesaVoteCount.put(candidateId, mesaVoteCount.getOrDefault(candidateId, 0) + 1);
         
-        // Guardar archivo parcial
+        
         savePartialFile(mesaId);
     }
 
@@ -114,7 +115,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        // Iniciar thread para escuchar la tecla 'q'
+        
         new Thread(() -> {
             System.out.println("Presione 'q' para cerrar el servidor...");
             while (true) {
@@ -131,14 +132,34 @@ public class Server {
             }
         }).start();
 
-        // Iniciar el servidor Ice
+        
         try (Communicator communicator = Util.initialize(args)) {
-            ObjectAdapter adapter = communicator.createObjectAdapter("VoteService");
             
-            // Registrar el servicio de votación
-            adapter.add(new VotingServiceImp(), new Identity("VotingService", "VoteService"));
+            com.zeroc.Ice.Properties props = communicator.getProperties();
+            String idx = props.getProperty("ServerIndex");
+
+            String adapterName;
+            String serviceIdentity;
+
+            if (idx != null && !idx.isBlank()) {
+                
+                adapterName = "Server-" + idx.trim();
+                serviceIdentity = "Service-" + idx.trim();
+            } else {
+                
+                adapterName = "VoteService";
+                serviceIdentity = "VotingService";
+            }
+
+            ObjectAdapter adapter = communicator.createObjectAdapter(adapterName);
+
             
-            // Registrar el servicio RMDestination con el identity correcto
+            adapter.add(new VotingServiceImp(), new Identity(serviceIdentity, ""));
+
+            
+            adapter.add(new QueryStationImp(), new Identity("QueryStation" + (idx != null && !idx.isBlank() ? ("-" + idx.trim()) : ""), ""));
+
+            
             adapter.add(new RMDestinationImpl(), new Identity("RMDestination", ""));
             
             adapter.activate();

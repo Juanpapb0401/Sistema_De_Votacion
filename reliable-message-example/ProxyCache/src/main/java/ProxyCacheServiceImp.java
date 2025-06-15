@@ -66,20 +66,27 @@ public class ProxyCacheServiceImp implements Service {
         try {
             // Conectar a múltiples instancias del servidor backend
             for (int i = 1; i <= 5; i++) {
-                String proxyString = "Service-" + i + ":default -h localhost -p 1001" + i;
-                ObjectPrx base = communicator.stringToProxy(proxyString);
-                ServicePrx backendService = ServicePrx.checkedCast(base);
-                
-                if (backendService != null) {
+                /*
+                 * Creamos proxies únicamente con la identidad registrada en IceGrid.
+                 * Al dejar que el Localizador resuelva los endpoints y usar
+                 * `uncheckedCast`, evitamos que se intente establecer conexión
+                 * inmediatamente (lo que provocaba fallos cuando los servidores
+                 * backend estaban en activación *on-demand*).
+                 */
+                try {
+                    String proxyString = "Service-" + i; // identidad publicada en IceGrid
+                    ObjectPrx base = communicator.stringToProxy(proxyString);
+                    ServicePrx backendService = ServicePrx.uncheckedCast(base);
+
                     backendServers.add(backendService);
-                    logger.info("Conectado al servidor backend: Service-" + i);
-                } else {
-                    logger.warning("No se pudo conectar al servidor backend: Service-" + i);
+                    logger.info("Proxy backend agregado: " + proxyString);
+                } catch (Exception ex) {
+                    logger.warning("No se pudo crear proxy para Service-" + i + ": " + ex.getMessage());
                 }
             }
             
             if (backendServers.isEmpty()) {
-                throw new RuntimeException("No se pudo conectar a ningún servidor backend");
+                logger.warning("No se pudieron crear proxies backend en el arranque. Se intentará conectar dinámicamente más adelante.");
             }
             
         } catch (Exception e) {
