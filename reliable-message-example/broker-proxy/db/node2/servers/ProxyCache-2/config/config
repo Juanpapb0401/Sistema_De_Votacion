@@ -1,11 +1,11 @@
-# Configuration file (06/14/25 21:24:55.841)
+# Configuration file (06/14/25 23:38:34.491)
 
 # Server configuration
 Ice.Admin.ServerId=ProxyCache-2
 Ice.Admin.Endpoints=tcp -h localhost
 Ice.ProgramName=ProxyCache-2
 # Object adapter ProxyCache-2
-ProxyCache-2.Endpoints=tcp -h localhost -p 90012
+ProxyCache-2.Endpoints=tcp -h localhost
 ProxyCache-2.AdapterId=ProxyCache-2.ProxyCache-2
 # Server descriptor properties
 Identity=ProxyCache-2

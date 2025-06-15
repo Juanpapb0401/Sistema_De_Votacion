@@ -5,9 +5,9 @@ IceGrid.InstanceName=SistemaVotacion
 
 Ice.Default.Locator=SistemaVotacion/Locator:default -h localhost -p 4061
 
-IceGrid.Node.Name=node1
+IceGrid.Node.Name=node2
 IceGrid.Node.Endpoints=default -h localhost
-IceGrid.Node.Data=db/node
+IceGrid.Node.Data=db/node2
 
 
 # Configuraciones específicas para el Sistema de Votación

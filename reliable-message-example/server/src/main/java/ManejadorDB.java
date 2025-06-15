@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ManejadorDB {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/votaciones";
+    private static final String URL = "jdbc:postgresql://10.147.20.61:5432/votaciones";
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
 
