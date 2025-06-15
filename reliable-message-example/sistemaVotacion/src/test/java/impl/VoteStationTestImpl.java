@@ -34,7 +34,7 @@ public class VoteStationTestImpl extends VoteStationImpl {
     public int vote(String document, int candidateId, Current current) {
         try {
             // Usar la conexión BD falsa
-            FakeConexionBD conexion = new FakeConexionBD();
+            TestConexionBD conexion = new TestConexionBD();
             
             java.util.List<java.util.Map<String, Object>> res =
                     conexion.getInfoBDWithParams("SELECT mesa_id FROM ciudadano WHERE documento = ?", document);
@@ -50,13 +50,13 @@ public class VoteStationTestImpl extends VoteStationImpl {
                 return 1;
             }
 
-            if (FakeVoteRegistry.hasVoted(document)) {
+            if (TestVoteRegistry.hasVoted(document)) {
                 // Ya votó
                 return 2;
             }
 
             // Registrar el voto
-            FakeVoteRegistry.register(document);
+            TestVoteRegistry.register(document);
             // Voto registrado correctamente
             return 0;
 

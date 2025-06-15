@@ -6,12 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Implementación falsa de ConexionBD para pruebas
- */
-public class FakeConexionBD extends ConexionBD {
+
+public class TestConexionBD extends ConexionBD {
     
-    // Base de datos simulada con documentos y sus mesas asignadas
     public static final Map<String, Integer> CIUDADANOS = new HashMap<>();
     
     static {
@@ -39,7 +36,6 @@ public class FakeConexionBD extends ConexionBD {
         if (params.length > 0 && params[0] != null) {
             String documento = params[0].toString();
             
-            // Si el documento está en nuestra "base de datos"
             if (CIUDADANOS.containsKey(documento)) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("mesa_id", CIUDADANOS.get(documento));
@@ -52,31 +48,26 @@ public class FakeConexionBD extends ConexionBD {
     
     @Override
     public void addVote(int candidateId, int userId) {
-        // Simulamos añadir un voto
         String documento = String.valueOf(userId);
         if (!VOTOS_REGISTRADOS.contains(documento)) {
             VOTOS_REGISTRADOS.add(documento);
         }
     }
     
-    // Método para simular si un documento ya votó
     public static boolean haVotado(String documento) {
         return VOTOS_REGISTRADOS.contains(documento);
     }
     
-    // Método para registrar un voto manualmente (para pruebas)
     public static void registrarVoto(String documento) {
         if (!VOTOS_REGISTRADOS.contains(documento)) {
             VOTOS_REGISTRADOS.add(documento);
         }
     }
     
-    // Método para limpiar todos los votos (para reiniciar pruebas)
     public static void limpiarVotos() {
         VOTOS_REGISTRADOS.clear();
     }
     
-    // Método para agregar un ciudadano a la base de datos simulada
     public static void agregarCiudadano(String documento, int mesaId) {
         CIUDADANOS.put(documento, mesaId);
     }
