@@ -1,0 +1,13 @@
+# Configuration file (06/14/25 23:11:06.961)
+
+# Server configuration
+Ice.Admin.ServerId=VotingServer-2
+Ice.Admin.Endpoints=tcp -h localhost
+Ice.ProgramName=VotingServer-2
+# Object adapter Server-2
+Server-2.Endpoints=tcp -h localhost -p 10012
+Server-2.AdapterId=VotingServer-2.Server-2
+# Server descriptor properties
+Identity=Service-2
+ServerIndex=2
+Ice.Default.Locator=SistemaVotacion/Locator:default -h localhost -p 4061
