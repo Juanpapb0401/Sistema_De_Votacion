@@ -12,7 +12,7 @@ import java.util.Map;
 public class FakeConexionBD extends ConexionBD {
     
     // Base de datos simulada con documentos y sus mesas asignadas
-    private static final Map<String, Integer> CIUDADANOS = new HashMap<>();
+    public static final Map<String, Integer> CIUDADANOS = new HashMap<>();
     
     static {
         // Documentos en mesa 1
